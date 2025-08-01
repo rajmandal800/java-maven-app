@@ -56,7 +56,7 @@ pipeline {
         stage("deploy") {
             input {
                 message "Select the environment to deploy to"
-                ok "Deploy"
+                ok "Deploy" // This is a button that confirms the user's selection and proceeds with the deployment
                 parameters {
                     choice(name: 'ONE', choices: ['dev', 'staging', 'prod'], description: 'Deployment environment')
                     choice(name: 'TWO', choices: ['dev', 'staging', 'prod'], description: 'Deployment environment')
@@ -65,6 +65,14 @@ pipeline {
            
             steps {
                 script {
+                    env.ENV = input(
+                        id: 'userInput', 
+                        message: 'Please select the environment for deployment:',
+                        parameters: [
+                            choice(name: 'ENVIRONMENT', choices: ['dev', 'test', 'prod'], description: 'Deployment environment')
+                        ]
+                    )
+                    echo "Selected environment from inline user input: ${env.ENV}"
                     // echo "deploying"
                     // echo "deploying with: ${SERVER_CREDENTIALS}"  
                     gv.deployApp()
