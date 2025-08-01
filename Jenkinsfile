@@ -15,7 +15,7 @@ pipeline {
     }
     environment {
         MY_ENV_VAR = "some_value"
-        SERVER_CREDENTIALS = credentials('nexus-docker-repo')
+        SERVER_CREDENTIALS = credentials('nexus-docker-repo') // need credentials and credentials binding plugin installed
     }
     stages {
         stage("init") {
@@ -29,7 +29,7 @@ pipeline {
             steps {
                 script {
                     echo "building jar"
-                    //gv.buildJar()
+                    gv.buildJar()
                 }
             }
         }
@@ -37,7 +37,7 @@ pipeline {
             steps {
                 script {
                     echo "building image"
-                    //gv.buildImage()
+                    gv.buildImage()
                 }
             }
         }
@@ -47,8 +47,8 @@ pipeline {
             }
             steps {
                 script {
-                    echo "running tests"
-                    //gv.runTests()
+                    // echo "running tests"
+                    gv.runTests()
                 }
             }
         }
@@ -56,16 +56,9 @@ pipeline {
         stage("deploy") {
             steps {
                 script {
-                    echo "deploying"
-                    echo "deploying with: ${SERVER_CREDENTIALS}"
-
-                    // or use cedentials using withCredentials wrapper
-                    withCredentials([usernamePassword(credentialsId: 'nexus-docker-repo', passwordVariable: 'PASS', usernameVariable: 'USER')]) {
-                        echo "Username: ${USER}"
-                        echo "Password: ${PASS}"
-                    }
-                    echo "deplying version: ${params.VERSION} to environment: ${params.ENVIRONMENT}"
-                    //gv.deployApp()
+                    // echo "deploying"
+                    // echo "deploying with: ${SERVER_CREDENTIALS}"  
+                    gv.deployApp()
                 }
             }
         }

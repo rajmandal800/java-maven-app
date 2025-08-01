@@ -5,15 +5,25 @@ def buildJar() {
 
 def buildImage() {
     echo "building the docker image..."
-    withCredentials([usernamePassword(credentialsId: 'docker-hub-repo', passwordVariable: 'PASS', usernameVariable: 'USER')]) {
-        sh 'docker build -t nanajanashia/demo-app:jma-2.0 .'
-        sh "echo $PASS | docker login -u $USER --password-stdin"
-        sh 'docker push nanajanashia/demo-app:jma-2.0'
+    withCredentials([usernamePassword(credentialsId: 'nexus-docker-repo', passwordVariable: 'PASS', usernameVariable: 'USER')]) {
+        // sh 'docker build -t nanajanashia/demo-app:jma-2.0 .'
+        // sh "echo $PASS | docker login -u $USER --password-stdin"
+        // sh 'docker push nanajanashia/demo-app:jma-2.0'
+
+        sh 'docker build -t 192.168.64.8:8083/java-maven-app:jma-1.2.0 .'
+        sh "echo $PASS | docker login -u $USER --password-stdin 192.168.64.8:8083"
+        sh 'docker push 192.168.64.8:8083/java-maven-app:jma-1.2.0'
     }
 } 
+def runTests() {
+    echo 'running tests...'
+}
 
 def deployApp() {
+    echo "deploying version: ${params.VERSION} to environment: ${params.ENVIRONMENT}"
     echo 'deploying the application...'
 } 
+
+
 
 return this
