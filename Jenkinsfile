@@ -1,4 +1,5 @@
 #! usr/bin/env groovy
+@Library('jenkins-shared-library')_
 pipeline{
     agent any
     stages{
@@ -6,29 +7,25 @@ pipeline{
             steps {
                 script {
                     echo "Testing the application..."
-                    echo "Executing pipeline for branch: ${BRANCH_NAME}"
+    
                 }
             }
         }
         stage("build"){
-            when {
-                expression { BRANCH_NAME == 'main' }
-            }
+           
             steps {
                 script {
-                    echo "Building the application..."
+                    buildMavenJar()
                    
                 }
             }
         }
 
         stage("deploy"){
-            when {
-                expression { BRANCH_NAME == 'main' }
-            }
+          
             steps {
                 script {
-                    echo "Deploying the application..."
+                   buildImage("192.168.64.8:8083/java-maven-app:jma-3.0")
                 }
             }
         }
