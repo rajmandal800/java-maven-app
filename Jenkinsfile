@@ -1,5 +1,13 @@
 #! usr/bin/env groovy
-@Library('jenkins-shared-library')
+// @Library('jenkins-shared-library') // used to load the global shared library configured in Jenkins dashboard
+
+library identifier: 'jenkins-shared-library@main', retriever: modernSCM(
+    [$class: 'GitSCMSource',
+     remote: 'https://github.com/rajmandal800/jenkins-shared-library.git',
+     credentialsId: 'de951385-ce45-4fd3-8457-61ec0f3422d4'
+    ]
+)
+
 def gv
 
 pipeline{
