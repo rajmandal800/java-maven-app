@@ -24,7 +24,7 @@ pipeline{
     }
     stages{
 
-        stage("initialize"){
+        stage("initialise"){
             steps {
                 script {
                   
