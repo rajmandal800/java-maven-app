@@ -5,6 +5,7 @@ pipeline{
             steps {
                 script {
                     echo "Testing the application..."
+                    echo "Testing the webhook integration..."
                     echo "Executing pipeline for branch: ${BRANCH_NAME}"
                 }
             }
