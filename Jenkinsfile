@@ -12,12 +12,12 @@ def gv
 
 pipeline{
     agent any
-     parameters {
-        string(name: 'BRANCH_NAME', defaultValue: 'main', description: 'Branch to build')
-        choice(name: 'ENVIRONMENT', choices: ['dev', 'test', 'prod'], description: 'Deployment environment')
-        choice(name: "VERSION", choices: ['1.1', '1.2', '1.3'], description: 'Application version')
-        booleanParam(name: 'RUN_TESTS', defaultValue: true, description: 'Run tests during the build')
-    }
+//      parameters {
+//         string(name: 'BRANCH_NAME', defaultValue: 'main', description: 'Branch to build')
+//         choice(name: 'ENVIRONMENT', choices: ['dev', 'test', 'prod'], description: 'Deployment environment')
+//         choice(name: "VERSION", choices: ['1.1', '1.2', '1.3'], description: 'Application version')
+//         booleanParam(name: 'RUN_TESTS', defaultValue: true, description: 'Run tests during the build')
+//     }
     tools {
         maven 'maven-3.9'
        
@@ -41,6 +41,19 @@ pipeline{
                 }
             }
         }
+        stage("increment version"){
+            steps {
+                script{
+                    echo 'incrementing app version...'
+                    sh 'mvn build-helper:parse-version versions:set \
+                        -DnewVersion=\\\${parsedVersion.majorVersion}.\\\${parsedVersion.minorVersion}.\\\${parsedVersion.nextIncrementalVersion} \
+                        versions:commit'
+                    def matcher = readFile('pom.xml') =~ '<version>(.+)</version>'
+                    def version = matcher[0][1]
+                    env.IMAGE_NAME = "$version-$BUILD_NUMBER"
+                }
+            }
+        }
         stage("build jar"){
            
             steps {
@@ -54,9 +67,9 @@ pipeline{
             steps {
                 script {
                   
-                    buildImage("192.168.64.8:8083/java-maven-app:jma-${params.VERSION}")
+                    buildImage("192.168.64.8:8083/java-maven-app:${IMAGE_NAME}")
                     dockerLogin()
-                    dockerPush("192.168.64.8:8083/java-maven-app:jma-${params.VERSION}")
+                    dockerPush("192.168.64.8:8083/java-maven-app:${IMAGE_NAME}")
                 }
             }
         }
