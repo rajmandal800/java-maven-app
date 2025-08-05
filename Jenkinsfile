@@ -87,20 +87,39 @@ pipeline{
             steps {
                 script{
 
-                withCredentials([usernamePassword(credentialsId:'de951385-ce45-4fd3-8457-61ec0f3422d4', passwordVariable: 'PASS', usernameVariable: 'USER')]){
-                sh 'git config --global user.email "jenkins@mobili.com"' // doing this if we don't configure it jenkins will complain for emtpy metadata
-                sh 'git config --global user.name "jenkins"'
+            //     withCredentials([usernamePassword(credentialsId:'de951385-ce45-4fd3-8457-61ec0f3422d4', passwordVariable: 'PASS', usernameVariable: 'USER')]){
+            //     sh 'git config --global user.email "jenkins@mobili.com"' // doing this if we don't configure it jenkins will complain for emtpy metadata
+            //     sh 'git config --global user.name "jenkins"'
 
-                sh 'git status'
-                sh 'git branch'
-                sh 'git config --list'
+            //     def REPO_URL = "https://${USER}:${PASS}@github.com/rajmandal800/java-maven-app.git"
+            //     sh 'git status'
+            //     sh 'git branch'
+            //     sh 'git config --list'
 
-                sh "git remote set-url origin https://${USER}:${PASS}@github.com/rajmandal800/java-maven-app.git"
-                sh 'git add .'
-                sh 'git commit -m "ci: version bump"'
-                sh 'git push origin HEAD:jenkins-job'
+            //     sh "git remote set-url origin ${REPO_URL}"
+            //     sh 'git add .'
+            //     sh 'git commit -m "ci: version bump"'
+            //     sh 'git push origin HEAD:jenkins-job'
 
-            }
+            // }
+
+                //Installed ssh agent plugin and created credential for ssh
+                sshagent(credentials: ['github_ssh_rajmandal800']) {
+                    sh 'git config --global user.email "jenkins@mobili.com"'
+                    sh 'git config --global user.name "jenkins"'
+
+                    // Ensure remote URL is SSH
+                    sh 'git remote set-url origin git@github.com:rajmandal800/java-maven-app.git'
+
+                    sh 'git status'
+                    sh 'git branch'
+                    sh 'git config --list'
+
+                    sh 'git add .'
+                    sh 'git commit -m "ci: version bump" || echo "No changes to commit"'
+                    sh 'git push origin HEAD:jenkins-job'
+                }
+
                 
                 } 
             }
