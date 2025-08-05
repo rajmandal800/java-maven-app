@@ -86,8 +86,8 @@ pipeline{
          stage("commit version update"){
             steps {
                 script{
-                    
-                withCredentials([usernamePassword(credentialsId:'de951385-ce45-4fd3-8457-61ec0f3422d4',passwordVariable:'PASS',usernameVariable:'USER')]){
+
+                withCredentials([usernamePassword(credentialsId:'de951385-ce45-4fd3-8457-61ec0f3422d4', passwordVariable: 'PASS', usernameVariable: 'USER')]){
                 sh 'git config --global user.email "jenkins@mobili.com"' // doing this if we don't configure it jenkins will complain for emtpy metadata
                 sh 'git config --global user.name "jenkins"'
 
