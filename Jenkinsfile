@@ -104,6 +104,8 @@ pipeline{
             // }
 
                 //Installed ssh agent plugin and created credential for ssh
+                // Use Ignore Committer Strategy plugin and add jenkins user email to not build if committer is jenkins
+                //Needed because of webtrigger loop when jenkins updates version and push to the SCM.
                 sshagent(credentials: ['github_ssh_rajmandal800']) {
                     sh 'git config --global user.email "jenkins@mobili.com"'
                     sh 'git config --global user.name "jenkins"'
