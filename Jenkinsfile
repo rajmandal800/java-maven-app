@@ -82,5 +82,22 @@ pipeline{
                 }
             }
         }
+         stage("commit version update"){
+               withCredentials([usernamePassword(credentialsId:'de951385-ce45-4fd3-8457-61ec0f3422d4',passwordVariable:'PASS',usernameVariable:'USER')]){
+                sh 'git config --global user.email "jenkins@mobili.com"' // doing this if we don't configure it jenkins will complain for emtpy metadata
+                sh 'git config --global user.name "jenkins"'
+
+                sh 'git status'
+                sh 'git branch'
+                sh 'git config --list'
+
+                sh "git remote set-url origin https://${USER}:${PASS}@github.com/rajmandal800/java-maven-app.git"
+                sh 'git add .'
+                sh 'git commit -m "ci: version bump"'
+                sh 'git push origin HEAD:jenkins-job'
+               }
+         }
     }
+
+
 }
