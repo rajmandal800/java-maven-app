@@ -119,7 +119,7 @@ pipeline{
 
                     sh 'git add .'
                     sh 'git commit -m "ci: version bump" || echo "No changes to commit"'
-                    sh 'git push origin HEAD:jenkins-shared-lib-demo'
+                    sh 'git push origin HEAD:jenkins-job'
                 }
 
                 
