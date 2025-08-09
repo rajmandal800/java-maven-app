@@ -22,6 +22,7 @@ def runTests() {
 def deployApp() {
     echo "deploying version: ${params.VERSION} to environment: ${params.ENVIRONMENT}"
     echo 'deploying the application...'
+    
 } 
 
 

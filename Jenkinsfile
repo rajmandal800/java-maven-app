@@ -68,7 +68,7 @@ pipeline{
                 script {
                   
                     buildImage("192.168.64.8:8083/java-maven-app:${IMAGE_NAME}")
-                    dockerLogin()
+                    dockerLogin("192.168.64.8:8083","nexus-docker-repo")
                     dockerPush("192.168.64.8:8083/java-maven-app:${IMAGE_NAME}")
                 }
             }
