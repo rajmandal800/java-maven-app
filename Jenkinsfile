@@ -87,9 +87,10 @@ pipeline{
             steps {
                 script {
                   
-                    buildImage(IMAGE_NAME)
+                    // buildImage(IMAGE_NAME)
                     dockerLogin(params.REGISTRY,REGISTRY_CREDENTIAL_ID)
-                    dockerPush(IMAGE_NAME)
+                    buildAndPushMultiArchImage(IMAGE_NAME)
+                    // dockerPush(IMAGE_NAME)
                 }
             }
         }
