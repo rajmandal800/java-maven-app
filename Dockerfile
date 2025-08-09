@@ -1,6 +1,6 @@
 FROM openjdk:8-jre-alpine
 
-EXPOSE 8080
+EXPOSE 3080
 
 COPY ./target/java-maven-app-*.jar /usr/app/
 

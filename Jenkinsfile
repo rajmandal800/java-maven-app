@@ -16,6 +16,7 @@ pipeline{
         string(name: 'BRANCH_NAME', defaultValue: 'main', description: 'Branch to build')
         choice(name: 'ENVIRONMENT', choices: ['dev', 'test', 'prod'], description: 'Deployment environment')
         choice(name: "VERSION", choices: ['1.1', '1.2', '1.3'], description: 'Application version')
+        choice(name: 'REGISTRY',choices: ['docker.io', '192.168.64.8:8083'],description: 'Select the Docker registry to use')
         booleanParam(name: 'RUN_TESTS', defaultValue: true, description: 'Run tests during the build')
     }
     tools {
@@ -50,7 +51,26 @@ pipeline{
                         versions:commit'
                     def matcher = readFile('pom.xml') =~ '<version>(.+)</version>'
                     def version = matcher[0][1]
-                    env.IMAGE_NAME = "$version-$BUILD_NUMBER"
+                    env.IMAGE_VERSION = "$version-$BUILD_NUMBER"
+
+                    env.IMAGE_FULL_TAG= "jma-$IMAGE_VERSION"
+                   
+                 
+
+                }
+            }
+        }
+        stage("construct image name & properties"){
+            steps {
+                script {
+                       if (params.REGISTRY == 'docker.io') {
+                        def DOCKERHUB_USERNAME = 'rajmandal800'
+                        env.IMAGE_NAME = "${DOCKERHUB_USERNAME}/java-maven-app:${IMAGE_FULL_TAG}"
+                        env.REGISTRY_CREDENTIAL_ID="ca509668-e973-477f-8a5a-0375edfd58cd"
+                    } else {
+                         env.IMAGE_NAME  = "${REGISTRY}/java-maven-app:${IMAGE_FULL_TAG}"
+                         env.REGISTRY_CREDENTIAL_ID="nexus-docker-repo"
+                    }
                 }
             }
         }
@@ -67,9 +87,9 @@ pipeline{
             steps {
                 script {
                   
-                    buildImage("192.168.64.8:8083/java-maven-app:${IMAGE_NAME}")
-                    dockerLogin("192.168.64.8:8083","nexus-docker-repo")
-                    dockerPush("192.168.64.8:8083/java-maven-app:${IMAGE_NAME}")
+                    buildImage(IMAGE_NAME)
+                    dockerLogin(params.REGISTRY,REGISTRY_CREDENTIAL_ID)
+                    dockerPush(IMAGE_NAME)
                 }
             }
         }
@@ -78,6 +98,10 @@ pipeline{
           
             steps {
                 script {
+                    def dockerCmd = "docker run -p 3080:3080 -d $IMAGE_NAME"
+                    sshagent(['digitalocean-mobili-monitoring-droplet-key']) {
+                       sh "ssh -o StrictHostKeyChecking=no devops@46.101.134.250 ${dockerCmd}"
+                }   
                     gv.deployApp()
                 }
             }
